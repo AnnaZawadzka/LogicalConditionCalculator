@@ -1,14 +1,16 @@
-package main.java.pageobjects;
+package pageobjects;
 
-import main.java.helpers.WaitHelper;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
+import static helpers.WaitHelper.waitForElementToBeVisible;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.stream;
 
 public class LogicalCalculatorPage extends AbstractBasePage {
     @FindBy(id = "Query")
@@ -16,12 +18,6 @@ public class LogicalCalculatorPage extends AbstractBasePage {
 
     @FindBy(id = "Calculate")
     private WebElement calculateBtn;
-
-    @FindBy(id = "Union")
-    private WebElement unionBtn;
-
-    @FindBy(id = "Intersection")
-    private WebElement intersectionBtn;
 
     @FindBy(id = "Difference")
     private WebElement differenceBtn;
@@ -35,6 +31,10 @@ public class LogicalCalculatorPage extends AbstractBasePage {
     @FindBy(css = ".card-title")
     private WebElement siteHeader;
 
+    private final By groupNameButton = By.className("btn");
+    private static final int GROUP_NAME_INDEX_ORDER = 1;
+
+
     public String getHeaderText() {
         return siteHeader.getText();
     }
@@ -45,7 +45,8 @@ public class LogicalCalculatorPage extends AbstractBasePage {
     }
 
     public LogicalCalculatorPage clickUseGroupByName(String name) {
-        getGroupByName(name).findElement(By.className("btn"))
+        getGroupByName(name)
+                .findElement(groupNameButton)
                 .click();
         return this;
     }
@@ -53,7 +54,7 @@ public class LogicalCalculatorPage extends AbstractBasePage {
     private WebElement getGroupByName(String name) {
         return userGroups.stream()
                 .filter(group -> group
-                        .findElement(By.className("btn"))
+                        .findElement(groupNameButton)
                         .getText()
                         .contains(name))
                 .findFirst()
@@ -71,13 +72,15 @@ public class LogicalCalculatorPage extends AbstractBasePage {
     }
 
     public List<String> getResults() {
-        WaitHelper.waitForElementToBeVisible(resultsPrompt);
-        return Arrays.asList(resultsPrompt.getText().split(","));
+        waitForElementToBeVisible(resultsPrompt);
+        return asList(resultsPrompt.getText().split(","));
     }
 
     public List<String> getNumbersFromGroup(String name) {
-        return Arrays.stream(getGroupByName(name).getText().replaceAll(",", "").split(" ")).skip(GROUP_NAME_INDEX_ORDER).collect(Collectors.toList());
+        return stream(getGroupByName(name).getText()
+                .replaceAll(",", "")
+                .split(" "))
+                .skip(GROUP_NAME_INDEX_ORDER)
+                .collect(Collectors.toList());
     }
-
-    private static final int GROUP_NAME_INDEX_ORDER = 1;
 }

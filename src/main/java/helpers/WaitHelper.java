@@ -1,8 +1,9 @@
-package main.java.helpers;
+package helpers;
 
-import main.java.DriverManager;
+import driver.DriverManager;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
+import static java.util.Objects.requireNonNull;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOf;
 
 public class WaitHelper {
@@ -27,7 +29,9 @@ public class WaitHelper {
     public static void waitForPageToLoad(Duration timeout) {
         LOGGER.info("Wait for page to load...");
         ExpectedCondition<Boolean> expectedCondition = wd ->
-                ((JavascriptExecutor) wd).executeScript("return document.readyState").equals("complete");
+                ((JavascriptExecutor) requireNonNull(wd))
+                        .executeScript("return document.readyState")
+                        .equals("complete");
         condition(expectedCondition, timeout);
     }
 
@@ -41,7 +45,7 @@ public class WaitHelper {
     }
 
     public static void condition(ExpectedCondition<?> condition, Duration timeoutDuration, Duration pollingDuration) {
-        FluentWait wait = new FluentWait(DriverManager.driver)
+        FluentWait<WebDriver> wait = new FluentWait<>(DriverManager.getDriver())
                 .withTimeout(timeoutDuration)
                 .pollingEvery(pollingDuration)
                 .ignoring(NoSuchElementException.class);
