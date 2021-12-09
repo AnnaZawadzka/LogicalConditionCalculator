@@ -7,7 +7,7 @@ To open the project you need to have installed:
 3. JDK 1.11
 4. Chrome driver need to be added to locally to path: 
 
-   **logical-condition-calculator-site/src/main/resources/chromedriver**
+   **logical-condition-calculator-site/src/main/resources**
 
 
 5. Chrome Browser relevant to downloaded drivers
